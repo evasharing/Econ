@@ -13,7 +13,7 @@ DEFAULT_MAX_MOVIE_COUNT = 10 # Set the defaulf value of ‘max_movie_count’ us
 DEFAULT_MAX_UNAVAILABLE_COUNT = 20 # Set the defaulf value of ‘max_unavailable_count’ used in Conditional Judgment
 DEFAULT_RATING_FOLDER = 'Rating/' #Set the path of the folder for storing files
 
-'''Create the Crawler'''
+'''Create the crawler, and will be called in the main.py'''
 class Crawler(object): # Define a Class called Crawler; Tell Python how to crawl the website
 	main_url = 'https://www.imdb.com/title/'  # Define the former part of links of the pages to be crawled
 	rating_url_ending = 'ratings?ref_=tt_ov_rt' 
@@ -197,6 +197,7 @@ class Crawler(object): # Define a Class called Crawler; Tell Python how to crawl
 			result.append(divs[0].text)
 		return result[1], vote_count[1], result[2], vote_count[2]
 
+	
 	def get_rating_information(self, content):
 		soup = BeautifulSoup(content, 'html.parser')
 		all_tables = soup.find_all('table')
@@ -208,6 +209,7 @@ class Crawler(object): # Define a Class called Crawler; Tell Python how to crawl
 			return result, 1
 		return result, 0
 
+	'''Systhesize the three functions above to get all rating information'''
 	def all_rating_information(self, number):
 		url = self.main_url+'tt'+max([6 - int(log10(number)), 0]) * '0'+str(number)+'/'+self.rating_url_ending
 		content = self.get_page_content(url)
@@ -219,11 +221,12 @@ class Crawler(object): # Define a Class called Crawler; Tell Python how to crawl
 	def change_movie_url(self, number, prefix):
 		return prefix + max([6 - int(log10(number)), 0]) * '0' + str(number) # Update the url using the formula 
 
-	'''Create function to write content crawled into files'''
+	'''Create function to write information about movie crawled into files'''
 	def write_results_to_file(self, item): 
 		with open(self.movies_list_path, 'a') as f: # Call the movied_list_path defined before
 			f.write(str(item)) #  store the content in item to path in movied_list_path
 
+	'''Create function to write rating information crawled into files'''		
 	def write_rating_results_to_file(self, item):
 		filename = item.title+'.txt'
 		with open(self.rating_folder+filename, 'a') as f:
@@ -235,6 +238,6 @@ class Crawler(object): # Define a Class called Crawler; Tell Python how to crawl
 			self.max_diff = abs(float(us)-float(non_us))
 			self.max_diff_movie = title
 
-	'''Create the crawler, and will be called in the main.py'''
+	
 	
 	
